@@ -298,6 +298,14 @@ select.input{appearance:auto}
 .kv{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
 .kv b{font-family:var(--led);font-size:18px}
 .rules h3{margin:18px 0 6px;font-size:16px;color:var(--rule)}
+.rule-keys{margin:8px 0 4px;border:2px solid var(--rule);border-radius:6px;background:var(--paper);overflow:hidden}
+.rule-keys-head{padding:6px 12px;background:var(--rule);color:var(--on-gold);font-size:13px;font-weight:700;letter-spacing:.14em}
+.rule-key{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;padding:12px;border-top:1px solid var(--line)}
+.rule-keys-head + .rule-key{border-top:0}
+.rule-key i{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:50%;background:var(--rule);color:var(--on-gold);font-style:normal;font-family:var(--led);font-weight:700;font-size:16px}
+.rule-key b{display:block;font-size:17px;line-height:1.4;color:var(--ink)}
+.rule-key b em{font-style:normal;color:var(--red)}
+.rule-key span{display:block;margin-top:2px;font-size:14px;line-height:1.6;color:var(--ink-2)}
 .rules p,.rules li{font-size:15px;color:var(--ink)}
 .rules ol,.rules ul{padding-left:1.3em;margin:6px 0}
 #toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom,0px));z-index:80;width:max-content;max-width:calc(100% - 32px);padding:11px 16px;border-radius:6px;background:var(--ink);color:var(--ground);font-size:15px;font-weight:700;opacity:0;pointer-events:none;transform:translate(-50%,12px);transition:opacity .2s,transform .25s cubic-bezier(.2,.8,.3,1.2);box-shadow:0 10px 30px rgba(0,0,0,.25)}
@@ -362,6 +370,7 @@ select.input{appearance:auto}
   const LS_ACCOUNT = 'rk4-account';
   const LS_NOTICE = 'rk4-notice';
   const LS_RACE = 'rk4-race';
+  const LS_AGREE = 'rk4-agree';
   const LOADING_HTML = document.getElementById('app').innerHTML;
 
   /* ---------- 小さな道具 ---------- */
@@ -573,7 +582,7 @@ select.input{appearance:auto}
       if (S.phase === 'closed') {
         h += '<p class="note is-warn">締切を過ぎたため、新しいアカウントは作れません。作ってあるアカウントでログインしてください。</p>';
       } else {
-        h += '<p>名前とパスワードを決めて、アカウントを作ります。</p>' +
+        h += '<p>名前とパスワードを決めて、アカウントを作ります。<b>アカウントを作った時点で参加となり、参加費は' + up(S.stake * 2) + 'UP（2レース分）です。</b></p>' +
           '<p class="note is-gold"><b>名前は本名（フルネーム）で入れてください。</b>主催者が参加者の確認に使います。ニックネームやあだ名は使わないでください。名前はほかの参加者には表示されません。</p>' +
           '<label class="field"><span>名前（本名・20文字まで）</span><input class="input" id="reg-name" maxlength="20" autocomplete="name" placeholder="例：宇佐美 太郎"></label>' +
           '<label class="field"><span>パスワード（4文字以上）</span><input class="input" id="reg-pw" type="password" autocomplete="new-password"></label>' +
@@ -793,17 +802,18 @@ select.input{appearance:auto}
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => t.classList.remove('is-on'), 3800);
   }
-  function openSheet(title, body, actions, onMount) {
+  function openSheet(title, body, actions, onMount, opts) {
     const root = document.getElementById('sheet-root');
+    const locked = !!(opts && opts.locked);
     root.innerHTML = '<div class="sheet-back"><div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(title) + '" tabindex="-1"><div class="sheet-head"><h2 class="sheet-title">' + esc(title) +
-      '</h2><button type="button" class="sheet-x" data-sheet-close aria-label="閉じる">×</button></div><div class="sheet-body">' + body + '</div>' +
+      '</h2>' + (locked ? '' : '<button type="button" class="sheet-x" data-sheet-close aria-label="閉じる">×</button>') + '</div><div class="sheet-body">' + body + '</div>' +
       (actions ? '<div class="sheet-actions">' + actions + '</div>' : '') + '</div></div>';
     const sheet = root.querySelector('.sheet');
     root.querySelectorAll('[data-sheet-close]').forEach((b) => b.addEventListener('click', closeSheet));
     if (onMount) onMount(sheet);
     sheet.focus();
   }
-  function closeSheet() { document.getElementById('sheet-root').innerHTML = ''; }
+  function closeSheet() { S.locked = false; document.getElementById('sheet-root').innerHTML = ''; }
 
   function openConfirm() {
     const st = selectionState();
@@ -871,15 +881,45 @@ select.input{appearance:auto}
         });
       });
   }
-  function openRules() {
-    openSheet('ルール', '<div class="rules">' +
-      '<h3>遊び方</h3><p>URA DERBYの対象は2レースです。各レースで、1着・2着・3着を順番どおりに予想する「三連単」の券を1通りだけ買います。賭け金は1通り' + up(S.stake) + 'UPで決まっています。締切までは何度でも変更・取り消しができ、締切時点の券で確定します。片方のレースだけ買うこともできます。</p>' +
-      '<h3>締切</h3><p>締切は2レース共通です。1レース目の発走前に、2レース分をまとめて締め切ります。</p>' +
+  function deadlineText() {
+    const d = S.pub && S.pub.deadlineAt;
+    if (!d) return '締切';
+    const md = new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', month: 'long', day: 'numeric' }).format(new Date(d));
+    return md + ' ' + hm(d);
+  }
+  function rulesHTML() {
+    const fee = up(S.stake * 2);
+    return '<div class="rules">' +
+      '<div class="rule-keys"><div class="rule-keys-head">参加する前に</div>' +
+      '<div class="rule-key"><i>1</i><div><b>参加費は <em>' + fee + 'UP</em></b><span>2レース × 1レース' + up(S.stake) + 'UP。アカウントを新しく作った時点で、参加したことになります。</span></div></div>' +
+      '<div class="rule-key"><i>2</i><div><b>締切まで何回でも入れ直せる</b><span>締切（' + esc(deadlineText()) + '）までは、予想を何回でも入れ直せます。締切の時点で入っている予想で確定します。</span></div></div>' +
+      '<div class="rule-key"><i>3</i><div><b>各レースで三連単を1通り</b><span>2レースそれぞれで、1着・2着・3着を順番どおりに1通り予想します。</span></div></div></div>' +
+      '<h3>遊び方</h3><p>URA DERBYの対象は2レースです。各レースで、1着・2着・3着を順番どおりに予想する「三連単」の券を1通りだけ買います。賭け金は1レース' + up(S.stake) + 'UP、2レースで' + fee + 'UPです。</p>' +
+      '<h3>締切</h3><p>締切は2レース共通です。1レース目の発走前に、2レース分をまとめて締め切ります。締切までは、予想を何回でも入れ直せます。</p>' +
       '<h3>当たりの決め方（レースごと）</h3><p>上から順に判定し、当たりの券がある段で決まります。</p><ol><li>三連単：1〜3着を順番どおり</li><li>三連複（上位3人を順不同）と2連単（1着・2着を順番どおり）のうち、オッズが高いほう（同じなら三連複）</li>' +
       '<li>2連複：券の1着・2着の2人が、結果の1着・2着と順不同で一致</li><li>単勝：券の1着が結果の1着</li><li>どこにも当たりがなければ全員に返還</li></ol>' +
       '<p>たとえば結果が 1→2→3 で、三連単を当てた人がいなければ、1・2・3の3人を選んでいた券（三連複）や、1→2の順で選んでいた券（2連単）が的中になります。三連単が外れていても「的中」と出ることがあります。</p>' +
       '<h3>棄権・失格・同着</h3><p>締切前に棄権が出たら、その選手を選んでいた人は選び直してください。失格者がいる場合は、繰り上げた公式の着順で判定します。同着の場合は、同着の選手の順番を入れ替えた並びも当たりになります。</p>' +
-      '<h3>見られる情報</h3><p>オッズは全員の券の合計から出す目安で、締切まで変わります。ほかの人が何を買ったか、参加人数、賭け金の合計は表示されません。結果として見られるのは、自分の券が「的中」「はずれ」「返還」のどれかだけです。</p></div>', '');
+      '<h3>見られる情報</h3><p>オッズは全員の券の合計から出す目安で、締切まで変わります。ほかの人が何を買ったか、参加人数、賭け金の合計は表示されません。結果として見られるのは、自分の券が「的中」「はずれ」「返還」のどれかだけです。</p></div>';
+  }
+  function openRules() { openSheet('ルール', rulesHTML(), ''); }
+  /* ---------- ルールへの同意（新しく参加した人・この端末で初めての人） ---------- */
+  function agreedNames() { const v = store.get(LS_AGREE); return Array.isArray(v) ? v : []; }
+  function ensureAgreed() {
+    if (!S.me || agreedNames().indexOf(S.me.name) !== -1 || document.getElementById('sheet-root').innerHTML) return;
+    S.locked = true;
+    openSheet('ルールを確認してください', '<p class="small muted">参加する前に、ルールを最後まで読んでください。</p>' + rulesHTML(),
+      '<button type="button" class="btn btn-primary" id="agree-btn">ルールに同意して進む</button>', (el) => {
+        el.querySelector('#agree-btn').addEventListener('click', () => {
+          const list = agreedNames();
+          if (list.indexOf(S.me.name) === -1) list.push(S.me.name);
+          store.set(LS_AGREE, list);
+          S.locked = false;
+          closeSheet();
+          if (S.phase === 'open' && races().some((r) => !S.me.tickets[r.id])) { S.tab = 'buy'; render(); window.scrollTo(0, 0); }
+          toast('ルールに同意しました');
+        });
+      }, { locked: true });
   }
 
   /* ---------- 画面の組み立て ---------- */
@@ -1018,6 +1058,7 @@ select.input{appearance:auto}
     S.login = { mode: 'login', err: '' };
     render();
     window.scrollTo(0, 0);
+    ensureAgreed();
   }
   async function doRegister() {
     const name = (document.getElementById('reg-name').value || '').trim();
@@ -1081,7 +1122,7 @@ select.input{appearance:auto}
     }
   });
   document.addEventListener('keydown', (ev) => {
-    if (ev.key === 'Escape' && document.getElementById('sheet-root').innerHTML) { closeSheet(); return; }
+    if (ev.key === 'Escape' && document.getElementById('sheet-root').innerHTML) { if (!S.locked) closeSheet(); return; }
     if (ev.key === 'Enter' && ev.target && /^(reg-|login-)/.test(ev.target.id || '')) {
       const btn = document.querySelector('[data-act="login"],[data-act="register"]');
       if (btn) btn.click();
@@ -1105,6 +1146,7 @@ select.input{appearance:auto}
       if (r2.ok) S.me = r2.mine; else S.auth = null;
     }
     render();
+    ensureAgreed();
     schedulePoll();
     setInterval(tick, 1000);
   })();
