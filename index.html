@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>URA DERBY</title>
+<meta name="description" content="陸上の三連単予想ゲーム（非公式）。名前とパスワードを決めて参加します。">
+<meta property="og:title" content="URA DERBY">
+<meta property="og:description" content="陸上の三連単予想ゲーム（非公式）。名前とパスワードを決めて参加します。">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0B6E4F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230B6E4F%22/%3E%3Cpath%20d%3D%22M9%206v10a7%207%200%200%200%2014%200V6%22%20fill%3D%22none%22%20stroke%3D%22%23F9F8F3%22%20stroke-width%3D%224.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E">
+<script>window.URA_API = "https://script.google.com/macros/s/AKfycby3w-Zet_BUQwE5BcyPloEGctDHMjEFUNm6JUnTmDYbhD8lU4Wm8CEDTLZVwkhTLdA/exec";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Roboto+Mono:wght@500;700&family=Big+Shoulders+Display:wght@900&display=swap">
+<style>
+/* URA DERBY：紙のマークカードと入場券。生成りの紙、緑の罫線、赤いハンコ、鉛筆の黒 */
+:root{
+  --ground:#F9F8F3;      /* 紙 */
+  --paper:#FFFFFF;       /* 表・カード */
+  --raise:#E4EFE9;       /* 選択中の薄い緑 */
+  --well:#FFFFFF;        /* 入力欄 */
+  --line:#B9D6C8;        /* 細い罫線 */
+  --rule:#0B6E4F;        /* 太い罫線・印刷の緑 */
+  --ink:#1B1B1B;         /* 鉛筆 */
+  --ink-2:#5B5B55;
+  --ink-3:#6B6B64;
+  --gold:#0B6E4F;        /* 主役の色（ボタン・選択） */
+  --gold-deep:#08513A;
+  --amber:#1B1B1B;       /* 数字 */
+  --green:#0B6E4F;
+  --red:#C8102E;         /* ハンコ・棄権・締切 */
+  --on-gold:#F9F8F3;
+  --focus:#1F5FD6;
+  --display:"BIZ UDPGothic","Hiragino Sans","Noto Sans JP",sans-serif;
+  --led:"Roboto Mono","SFMono-Regular",Menlo,monospace;
+  --jp:"BIZ UDPGothic","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Yu Gothic",Meiryo,system-ui,sans-serif;
+  --num:var(--led);
+  --brand:"Big Shoulders Display","Arial Narrow","Helvetica Neue",sans-serif;
+  --nav-h:64px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--ground)}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:var(--jp);font-size:16px;line-height:1.6;overflow-wrap:anywhere;-webkit-font-smoothing:antialiased;background:var(--ground)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+[hidden]{display:none!important}
+a{color:var(--rule)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-2)}
+.small{font-size:13px}
+.app{max-width:560px;margin:0 auto;padding:0 0 calc(var(--nav-h) + 24px + env(safe-area-inset-bottom,0px))}
+.app.has-bar{padding-bottom:calc(var(--nav-h) + 170px + env(safe-area-inset-bottom,0px))}
+
+/* ---- 見出し（マークカードの上の帯） ---- */
+.mast{position:relative;padding:18px 16px 12px}
+.mast-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ticket{position:relative;display:flex;align-items:stretch;min-height:84px;border-radius:6px;overflow:hidden;background:var(--rule);color:var(--on-gold)}
+.ticket::before,.ticket::after{content:"";position:absolute;right:79px;width:18px;height:18px;border-radius:50%;background:var(--ground)}
+.ticket::before{top:-9px}
+.ticket::after{bottom:-9px}
+.ticket-main{flex:1;min-width:0;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:10px 14px}
+.ticket-kicker{font-family:var(--led);font-size:10px;font-weight:700;letter-spacing:.22em;color:#CFE6DA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ticket .brand-name{font-size:clamp(34px,11.4vw,46px);line-height:.95;color:var(--on-gold)}
+.ticket-stub{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:88px;border-left:2px dashed rgba(249,248,243,.55)}
+.ticket-stub span{font-family:var(--led);font-size:10px;font-weight:700;letter-spacing:.18em;color:#CFE6DA}
+.ticket-stub b{font-family:var(--led);font-size:20px;font-weight:700}
+.brand-name,.mast-event{margin:0;font-family:var(--brand);font-weight:900;font-size:38px;line-height:1;letter-spacing:.03em;color:var(--rule);white-space:nowrap}
+.brand-sub,.mast-kind{margin:4px 0 0;font-size:13px;font-weight:700;color:var(--ink-2);letter-spacing:.06em}
+.mast h1.mast-kind{font-size:13px}
+.mast-times{display:flex;flex-wrap:wrap;gap:2px 14px;margin:10px 0 0;font-size:12px;color:var(--ink-2)}
+.mast-times b{color:var(--ink);font-family:var(--led);font-size:14px;font-weight:700;margin-left:4px}
+.me-line{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:12px 0 0;padding-top:10px;border-top:1.5px solid var(--rule);font-size:14px;color:var(--ink-2)}
+.me-line span:first-child{color:var(--ink);font-weight:700}
+.me-line b{font-family:var(--led);font-size:20px;color:var(--ink)}
+
+/* ---- 締切までの数字（記入欄のマス目） ---- */
+.count-wrap{margin:14px 0 0}
+.count-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:28px}
+.count{margin:8px 0 0}
+.count:empty{display:none}
+.count-label{font-size:13px;font-weight:700;color:var(--ink-2)}
+.digits{display:flex;align-items:center;gap:5px}
+.digits i{display:inline-flex;align-items:center;justify-content:center;width:40px;height:56px;border:1.5px solid var(--rule);border-radius:3px;background:var(--paper);font-style:normal;font-family:var(--led);font-weight:700;font-size:32px;line-height:1;color:var(--ink)}
+.digits i.is-new{animation:digit .32s cubic-bezier(.2,.7,.3,1)}
+.digits b{font-family:var(--led);font-weight:700;font-size:26px;color:var(--rule)}
+.count.is-soon .digits i{border-color:var(--red);color:var(--red)}
+@keyframes digit{from{transform:translateY(-35%);opacity:0}to{transform:none;opacity:1}}
+
+/* ---- ハンコ（状態） ---- */
+.stamp{flex:none;display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 12px;border:1.5px solid currentColor;border-radius:999px;background:var(--paper);font-size:13px;font-weight:700;letter-spacing:.06em;line-height:1;white-space:nowrap}
+.stamp::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.stamp.is-preparing{color:var(--ink-3)}
+.stamp.is-open{color:var(--red)}
+.stamp.is-open::before{animation:pulse 1.6s ease-out infinite}
+.stamp.is-closed{color:var(--ink)}
+.stamp.is-final{color:var(--red)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(200,16,46,.55)}70%{box-shadow:0 0 0 7px rgba(200,16,46,0)}100%{box-shadow:0 0 0 0 rgba(200,16,46,0)}}
+@keyframes press{0%{transform:scale(1.8);opacity:0}60%{transform:scale(.94);opacity:1}100%{transform:none;opacity:1}}
+
+/* ---- 枠色の番号 ---- */
+.no{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:28px;height:28px;padding:0 5px;border-radius:3px;border:1.5px solid transparent;font-family:var(--led);font-weight:700;font-size:15px;line-height:1}
+.no.sm{min-width:22px;height:22px;font-size:12px}
+.f1{background:#FFFFFF;color:#1B1B1B;border-color:#1B1B1B}
+.f2{background:#1B1B1B;color:#FFFFFF}
+.f3{background:#E0352B;color:#FFFFFF}
+.f4{background:#1F5FD6;color:#FFFFFF}
+.f5{background:#F5D90A;color:#1B1B1B}
+.f6{background:#178A3E;color:#FFFFFF}
+.f7{background:#F58A1F;color:#1B1B1B}
+.f8{background:#F59AC5;color:#1B1B1B}
+.combo{display:inline-flex;align-items:center;gap:3px;flex-wrap:nowrap;vertical-align:middle}
+.combo .arrow{color:var(--ink-2);font-size:12px}
+
+/* ---- 共通の部品 ---- */
+.sec{padding:14px 16px}
+.sec + .sec{padding-top:0}
+.h{margin:0 0 10px;font-size:17px;font-weight:700;line-height:1.4}
+.btn{appearance:none;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:10px 18px;border-radius:6px;border:1.5px solid var(--rule);background:var(--paper);color:var(--rule);font-weight:700;font-size:16px;line-height:1.2;text-align:center;text-decoration:none;transition:transform .08s,background .15s}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn-primary{border-color:var(--rule);background:var(--rule);color:var(--on-gold);letter-spacing:.04em}
+.btn-danger{border-color:var(--red);background:var(--red);color:#fff}
+.btn-ghost{border-color:var(--rule);color:var(--rule);background:var(--paper)}
+.btn-sm{min-height:38px;padding:6px 12px;font-size:14px}
+.btn-block{display:flex;width:100%}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.is-busy{color:transparent!important;pointer-events:none}
+.btn.is-busy::after{content:"";position:absolute;left:50%;top:50%;width:20px;height:20px;margin:-10px 0 0 -10px;border:2.5px solid currentColor;border-color:var(--on-gold) var(--on-gold) var(--on-gold) transparent;border-radius:50%;animation:spin .7s linear infinite}
+.btn-ghost.is-busy::after{border-color:var(--rule) var(--rule) var(--rule) transparent}
+@keyframes spin{to{transform:rotate(360deg)}}
+.link{appearance:none;background:none;border:0;padding:8px 0;color:var(--rule);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.field{display:block;margin:14px 0}
+.field > span{display:block;margin-bottom:6px;font-size:14px;font-weight:700;color:var(--ink-2)}
+.input{width:100%;min-height:50px;padding:10px 14px;border:1.5px solid var(--rule);border-radius:4px;background:var(--well);color:var(--ink);font-size:17px}
+.input::placeholder{color:#8A8A82}
+.input:focus{outline:none;box-shadow:0 0 0 3px rgba(11,110,79,.22)}
+textarea.input{min-height:120px;line-height:1.6;font-size:16px}
+select.input{appearance:auto}
+.note{margin:12px 0;padding:10px 12px;border:1.5px solid var(--rule);border-radius:4px;background:var(--raise);font-size:14px}
+.note.is-warn{border-color:var(--red);background:#FBECEE;color:#7A0A1C}
+.note.is-gold{border-color:var(--rule);background:var(--raise)}
+.note.is-gold b{display:block;margin-bottom:2px;color:var(--rule)}
+.err{margin:8px 0 0;color:var(--red);font-size:14px;font-weight:700}
+.err:empty{display:none}
+.empty{padding:28px 16px;color:var(--ink-2);text-align:center}
+.row-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.info{margin:10px 0;padding:10px 12px;border:1.5px solid var(--line);border-radius:4px;background:var(--paper);font-size:14px;color:var(--ink-2)}
+
+/* ---- レース切り替え（チェック欄） ---- */
+.race-seg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 16px 0}
+.race-btn{appearance:none;position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:1px;min-width:0;min-height:62px;padding:8px 10px 8px 38px;border:1.5px solid var(--rule);border-radius:4px;background:var(--paper);text-align:left;color:var(--ink);line-height:1.3;transition:background .15s}
+.race-btn::before{content:"";position:absolute;left:11px;top:12px;width:18px;height:18px;border:1.5px solid var(--rule);border-radius:2px;background:var(--paper);transition:background .15s}
+.race-btn[aria-pressed="true"]{background:var(--raise)}
+.race-btn[aria-pressed="true"]::before{background:var(--rule) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M4.5 9.2l2.8 2.8 6-6' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat}
+.race-btn small{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ink-2)}
+.race-btn b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;font-size:15px}
+.race-btn span{font-size:12px;color:var(--ink-2)}
+.status-chip{display:inline-block;font-size:11px;font-weight:700;padding:0 6px;border:1.5px solid var(--rule);border-radius:3px;line-height:1.6;color:var(--rule)}
+.status-chip.is-none{border-color:var(--red);color:var(--red)}
+.race-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 4px}
+.race-head h2{margin:0;font-weight:700;font-size:19px;line-height:1.35}
+.race-head span{flex:none;font-size:13px;color:var(--ink-2)}
+.race-head b{font-family:var(--led);font-size:15px;color:var(--ink)}
+
+/* ---- 自分の券（半券） ---- */
+.myline{display:flex;align-items:stretch;justify-content:space-between;gap:0;margin:12px 16px 0;border:1.5px solid var(--rule);border-radius:6px;background:var(--paper);font-size:14px;font-weight:700}
+.myline > :first-child{flex:1;display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:10px 12px}
+.myline > :last-child{flex:none;display:flex;align-items:center;justify-content:center;padding:8px 12px;border-left:1.5px dashed var(--rule)}
+.myline .combo{margin-left:4px}
+.myline.is-new{animation:slip .45s cubic-bezier(.2,.8,.3,1) both}
+@keyframes slip{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.mini-stamp{display:inline-block;padding:1px 6px;border:1.5px solid var(--red);border-radius:3px;color:var(--red);font-size:11px;font-weight:700}
+.mini-stamp.is-press{animation:press-mini .45s cubic-bezier(.2,.9,.3,1.3) .15s both}
+@keyframes press-mini{0%{transform:scale(2);opacity:0}100%{transform:none;opacity:1}}
+
+/* ---- 出走表（印刷された表） ---- */
+.card-table{margin:0 16px;background:var(--paper);border:1.5px solid var(--rule);border-radius:4px;overflow:hidden}
+.runner{display:grid;grid-template-columns:30px 1fr 64px;align-items:center;gap:0 12px;min-height:50px;padding:0 0 0 12px;border-top:1px solid var(--line)}
+.runner-head{min-height:32px;border-top:0;background:var(--rule);color:var(--on-gold);font-size:12px;font-weight:700}
+.runner-head span:first-child,.runner-head span:last-child{text-align:center}
+.runner-name{font-weight:700;line-height:1.3;padding:6px 0}
+.runner-team{display:block;font-size:12px;font-weight:400;color:var(--ink-2)}
+.runner-odds{align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--line);line-height:1.15}
+.runner-odds b{display:block;font-family:var(--led);font-weight:700;font-size:17px;color:var(--ink)}
+.runner-odds span{font-size:10px;color:var(--ink-2)}
+.runner.is-dns{background:#F3F2EC;color:var(--ink-2)}
+.runner.is-dns .runner-name{text-decoration:line-through}
+.runner.is-dns .no{opacity:.4}
+.tag-dns{display:inline-block;margin-left:6px;padding:0 5px;border:1.5px solid var(--red);border-radius:3px;color:var(--red);font-size:11px;font-weight:700;line-height:1.6;vertical-align:2px;text-decoration:none}
+
+/* ---- マークカード（購入） ---- */
+.markcard{margin:12px 16px 0;background:var(--paper);border:1.5px solid var(--rule);border-radius:4px;overflow:hidden}
+.mc-head,.mc-row{display:grid;align-items:stretch;gap:0;padding:0 0 0 10px}
+.mc-head{position:sticky;top:0;z-index:2;min-height:34px;background:var(--rule);color:var(--on-gold);font-size:12px;font-weight:700}
+.mc-head > div{display:flex;align-items:center}
+.mc-head .mc-col{flex-direction:column;justify-content:center;line-height:1.2}
+.mc-row{min-height:54px;border-top:1px solid var(--line)}
+.mc-row.is-dns{background:#F3F2EC}
+.mc-row.is-dns .mc-name{color:var(--ink-2);text-decoration:line-through}
+.mc-runner{display:flex;align-items:center;gap:8px;min-width:0}
+.mc-name{min-width:0;font-weight:700;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mc-name small{display:block;font-weight:400;font-size:12px;color:var(--ink-2)}
+.mc-row.is-dns .mc-name small{color:var(--red);font-weight:700;text-decoration:none}
+.mark{appearance:none;display:flex;align-items:center;justify-content:center;width:100%;min-height:54px;padding:0;border:0;border-left:1px solid var(--line);background:none}
+.mark i{display:flex;align-items:center;justify-content:center;width:22px;height:34px;border:1.5px solid var(--rule);border-radius:50%;background:transparent;font-style:normal;font-family:var(--led);font-size:10px;color:var(--rule);transition:background .12s,border-color .12s}
+.mark[aria-pressed="true"] i{border-color:var(--ink);background:var(--ink);color:transparent;animation:pencil .28s cubic-bezier(.2,.8,.3,1.2)}
+@keyframes pencil{0%{transform:scale(.55) rotate(-8deg);opacity:.3}100%{transform:none;opacity:1}}
+.mark:disabled{cursor:not-allowed}
+.mark:disabled i{border-style:dashed;opacity:.35}
+.hint{margin:10px 16px 0;font-size:13px;color:var(--ink-2)}
+
+/* ---- 購入バー ---- */
+.bar{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:30;background:var(--paper);border-top:2px solid var(--rule);box-shadow:0 -8px 24px rgba(27,27,27,.10);animation:barin .3s ease-out both}
+@keyframes barin{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.bar-in{max-width:560px;margin:0 auto;padding:12px 16px}
+.bar-line{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:32px}
+.bar-points b{font-family:var(--led);font-size:22px}
+.bar-line .bar-odds{font-size:12px;color:var(--ink-2);text-align:right}
+.bar-line .bar-odds b{font-family:var(--led);font-weight:700;font-size:20px;color:var(--ink)}
+.bar-total{margin:6px 0 10px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:12px;color:var(--ink-2)}
+.bar-total b{font-family:var(--led);font-size:16px;color:var(--ink)}
+
+/* ---- 自分の券（タブ） ---- */
+.mycard{position:relative;margin:12px 16px 0;background:var(--paper);border:1.5px solid var(--rule);border-radius:6px}
+.mycard-in{padding:14px 16px}
+.mycard-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.mycard-label{font-size:12px;font-weight:700;color:var(--ink-2)}
+.mycard-name{font-size:18px;font-weight:700;line-height:1.35}
+.mycard-time{font-size:13px;color:var(--ink-2)}
+.mycard-ticket{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin:12px 0 0;padding-top:12px;border-top:1.5px dashed var(--rule);font-size:14px}
+.mycard-ticket .combo .no{min-width:32px;height:32px;font-size:17px}
+.mycard-none{margin:10px 0 0;color:var(--ink-2);font-size:14px}
+.ticket-odds{margin:10px 0 0;font-size:13px;color:var(--ink-2)}
+.ticket-odds b{font-family:var(--led);font-weight:700;font-size:18px;color:var(--ink)}
+.tiers{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:10px;border:1.5px solid var(--rule);border-radius:4px;overflow:hidden}
+.tiers div{padding:6px 8px;border-left:1px solid var(--line);font-size:11px;color:var(--ink-2);line-height:1.3}
+.tiers div:first-child{border-left:0}
+.tiers b{display:block;font-family:var(--led);font-weight:700;font-size:16px;color:var(--ink)}
+
+/* ---- 判定（ハンコ） ---- */
+.verdict{display:inline-flex;align-items:center;justify-content:center;flex:none;min-width:4.2em;padding:4px 10px;border:2.5px solid currentColor;border-radius:6px;font-size:19px;font-weight:700;line-height:1.3;letter-spacing:.12em;white-space:nowrap}
+.verdict.is-hit{color:var(--red);border-style:double;border-width:4px;animation:press .55s cubic-bezier(.2,.9,.3,1.3) both}
+.verdict.is-miss{color:var(--ink-3)}
+.verdict.is-refund{color:var(--ink)}
+.verdict-reason{display:block;margin-top:6px;font-size:12px;color:var(--ink-2);text-align:center}
+
+/* ---- オッズ表 ---- */
+.segs{display:flex;gap:6px;padding:12px 16px 0;flex-wrap:wrap}
+.chip{appearance:none;min-height:40px;padding:4px 14px;border:1.5px solid var(--rule);border-radius:4px;background:var(--paper);color:var(--rule);font-size:14px;font-weight:700;transition:background .15s,color .15s}
+.chip[aria-pressed="true"]{background:var(--rule);color:var(--on-gold)}
+.board{margin:12px 16px 0;border-radius:4px;overflow:hidden;border:1.5px solid var(--rule);background:var(--paper)}
+.board-head{display:flex;justify-content:space-between;padding:7px 12px;font-size:12px;font-weight:700;background:var(--rule);color:var(--on-gold)}
+.board-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;min-height:48px;padding:6px 12px;border-top:1px solid var(--line)}
+.board-row.is-dns{background:#F3F2EC;color:var(--ink-2)}
+.board-name{min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board-name small{display:block;font-weight:400;font-size:12px;color:var(--ink-2)}
+.board-odds{font-family:var(--led);font-weight:700;font-size:20px;color:var(--ink);text-align:right;line-height:1.05}
+.board-odds.is-none{color:var(--ink-3);font-size:16px;font-weight:500}
+.board-odds small{display:block;font-family:var(--jp);font-weight:400;font-size:11px;color:var(--ink-2)}
+.board-rank{font-family:var(--led);font-weight:700;font-size:14px;color:var(--ink-2);min-width:22px;text-align:right}
+.board-foot{margin:8px 16px 0;font-size:12px;color:var(--ink-3)}
+.firsts{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 2px;scrollbar-width:none}
+.firsts::-webkit-scrollbar{display:none}
+.first{appearance:none;display:flex;align-items:center;gap:6px;flex:none;min-height:42px;padding:4px 12px 4px 6px;border:1.5px solid var(--rule);border-radius:4px;background:var(--paper);font-size:14px;font-weight:700}
+.first[aria-pressed="true"]{background:var(--raise);box-shadow:0 0 0 1.5px var(--rule) inset}
+
+/* ---- お知らせ ---- */
+.banner{margin:12px 16px 0;padding:10px 10px 10px 12px;border:1.5px solid var(--red);border-radius:4px;background:#FBECEE;display:flex;gap:10px;align-items:flex-start;justify-content:space-between;font-size:14px;font-weight:700;color:#7A0A1C;animation:slip .4s ease-out both}
+.banner .btn{flex:none;white-space:nowrap}
+
+/* ---- ログイン ---- */
+.seg2{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--rule);border-radius:4px;overflow:hidden;background:var(--paper);margin:0 0 8px}
+.seg2 button{appearance:none;min-height:46px;border:0;background:transparent;color:var(--rule);font-weight:700;font-size:15px;transition:background .15s,color .15s}
+.seg2 button[aria-pressed="true"]{background:var(--rule);color:var(--on-gold)}
+
+/* ---- 下のメニュー ---- */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(249,248,243,.97);border-top:2px solid var(--rule);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:6px;height:var(--nav-h);padding:6px 10px}
+.nav-btn{appearance:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-radius:6px;background:none;font-size:11px;font-weight:700;color:var(--ink-2);transition:background .15s,color .15s}
+.nav-btn svg{width:22px;height:22px}
+.nav-btn[aria-current="page"]{background:var(--raise);color:var(--rule)}
+
+/* ---- シートとトースト ---- */
+.sheet-back{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(27,27,27,.45);animation:fade .2s ease-out both}
+.sheet{width:100%;max-width:560px;max-height:92%;overflow:auto;background:var(--ground);border-top:3px solid var(--rule);border-radius:12px 12px 0 0;padding:0 16px;animation:sheetin .3s cubic-bezier(.2,.8,.3,1) both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes sheetin{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
+.sheet-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0 10px;background:var(--ground);border-bottom:1.5px solid var(--rule)}
+.sheet-title{margin:0;font-size:18px;font-weight:700;color:var(--rule)}
+.sheet-x{appearance:none;width:44px;height:44px;margin-right:-8px;border:0;background:none;font-size:28px;line-height:1;color:var(--ink-2)}
+.sheet-body{padding:6px 0 10px}
+.sheet-actions{position:sticky;bottom:0;display:flex;gap:10px;padding:12px 0 calc(12px + env(safe-area-inset-bottom,0px));background:var(--ground);border-top:1px solid var(--line)}
+.sheet-actions .btn{flex:1}
+.kv{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:15px}
+.kv b{font-family:var(--led);font-size:18px}
+.rules h3{margin:18px 0 6px;font-size:16px;color:var(--rule)}
+.rules p,.rules li{font-size:15px;color:var(--ink)}
+.rules ol,.rules ul{padding-left:1.3em;margin:6px 0}
+#toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + 18px + env(safe-area-inset-bottom,0px));z-index:80;width:max-content;max-width:calc(100% - 32px);padding:11px 16px;border-radius:6px;background:var(--ink);color:var(--ground);font-size:15px;font-weight:700;opacity:0;pointer-events:none;transform:translate(-50%,12px);transition:opacity .2s,transform .25s cubic-bezier(.2,.8,.3,1.2);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+#toast.is-on{opacity:1;transform:translate(-50%,0)}
+
+/* ---- 読み込み中（マークを塗っていく） ---- */
+.loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:96px 16px 48px;text-align:center;color:var(--ink-2);font-size:14px;font-weight:700}
+.run{display:block;margin-bottom:6px}
+.run-horse{animation:run-bob .25s ease-in-out infinite alternate}
+.run-leg{animation:run-gallop .5s ease-in-out infinite}
+.run-leg.fl{transform-origin:112px 50px}
+.run-leg.fr{transform-origin:106px 50px;animation-delay:-.08s}
+.run-leg.hl{transform-origin:58px 50px;animation-delay:-.25s}
+.run-leg.hr{transform-origin:62px 50px;animation-delay:-.33s}
+.run-ground{animation:run-ground .35s linear infinite}
+.run-rail{animation:run-rail .9s linear infinite}
+@keyframes run-bob{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+@keyframes run-gallop{0%{transform:rotate(32deg)}50%{transform:rotate(-38deg)}100%{transform:rotate(32deg)}}
+@keyframes run-ground{to{stroke-dashoffset:26}}
+@keyframes run-rail{to{transform:translateX(-40px)}}
+.loading-brand{font-family:var(--brand);font-weight:900;font-size:34px;line-height:1;letter-spacing:.04em;color:var(--rule)}
+.loading .dots span{animation:dot 1.2s infinite}
+.loading .dots span:nth-child(2){animation-delay:.2s}
+.loading .dots span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,20%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
+.skel{display:block;height:14px;border-radius:3px;background:linear-gradient(90deg,#ECEBE4 25%,#F6F5EF 50%,#ECEBE4 75%) 0 0/200% 100%;animation:shimmer 1.2s linear infinite}
+@keyframes shimmer{to{background-position:-200% 0}}
+
+/* ---- 画面の切り替え ---- */
+.app.is-enter > *{animation:rise .32s cubic-bezier(.2,.8,.3,1) both}
+.app.is-enter > *:nth-child(2){animation-delay:.03s}
+.app.is-enter > *:nth-child(3){animation-delay:.06s}
+.app.is-enter > *:nth-child(4){animation-delay:.09s}
+.app.is-enter > *:nth-child(5){animation-delay:.12s}
+.app.is-enter > *:nth-child(n+6){animation-delay:.15s}
+@keyframes rise{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+
+</head>
+<body>
+<div id="app" class="app"><div class="loading"><svg class="run" viewBox="0 -6 200 98" width="220" height="108" aria-hidden="true"><g class="run-rail"><path d="M-40 58H240M-40 64H240" stroke="#B9D6C8" stroke-width="2"/><path d="M0 56v24M40 56v24M80 56v24M120 56v24M160 56v24M200 56v24M240 56v24" stroke="#B9D6C8" stroke-width="3"/></g><line class="run-ground" x1="0" y1="85" x2="200" y2="85" stroke="#0B6E4F" stroke-width="2.5" stroke-dasharray="16 10"/><g class="run-horse"><g fill="#0B6E4F"><line class="run-leg hl" x1="58" y1="50" x2="56" y2="82" stroke="#0B6E4F" stroke-width="6" stroke-linecap="round"/><line class="run-leg fl" x1="112" y1="50" x2="114" y2="82" stroke="#0B6E4F" stroke-width="6" stroke-linecap="round"/><path d="M52 38C42 32 32 36 26 48C34 44 42 44 50 46Z"/><path d="M50 36C54 28 70 26 86 28C98 29 106 30 110 36C113 42 110 50 102 52C90 55 68 55 56 52C48 50 46 42 50 36Z"/><path d="M98 34C102 24 110 16 118 12L126 16C120 22 114 32 110 44Z"/><path d="M116 10C120 7 126 7 130 10L142 22C144 25 142 28 138 27L128 24C124 22 120 18 116 10Z"/><path d="M120 9L122 2L126 9Z"/><line class="run-leg hr" x1="62" y1="50" x2="60" y2="82" stroke="#0E8A62" stroke-width="6" stroke-linecap="round"/><line class="run-leg fr" x1="106" y1="50" x2="108" y2="82" stroke="#0E8A62" stroke-width="6" stroke-linecap="round"/></g><path d="M76 30C80 20 88 15 96 16L98 21C91 22 85 26 82 31Z" fill="#C8102E"/><circle cx="99" cy="12" r="5" fill="#1B1B1B"/><path d="M80 30L90 36L86 41" fill="none" stroke="#1B1B1B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M93 20L112 24" stroke="#1B1B1B" stroke-width="2.5" stroke-linecap="round"/></g></svg><span class="loading-brand">URA DERBY</span><span class="loading-text">読み込み中<span class="dots"><span>.</span><span>.</span><span>.</span></span></span></div></div>
+<div id="bar-root"></div>
+<nav id="nav" class="nav" hidden aria-label="メニュー">
+  <div class="nav-in">
+    <button type="button" class="nav-btn" data-act="tab" data-tab="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2"/><circle cx="4.5" cy="12" r="1.2"/><circle cx="4.5" cy="18" r="1.2"/></svg>出走表</button>
+    <button type="button" class="nav-btn" data-act="tab" data-tab="buy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M15 6v12" stroke-dasharray="2 2"/></svg>購入</button>
+    <button type="button" class="nav-btn" data-act="tab" data-tab="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg>自分の券</button>
+    <button type="button" class="nav-btn" data-act="tab" data-tab="odds"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-7"/></svg>オッズ</button>
+  </div>
+</nav>
+<div id="sheet-root"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script>
+(function () {
+  'use strict';
+
+  const LS_AUTH = 'rk4-auth';
+  const LS_DEVICE = 'rk4-device';
+  const LS_ACCOUNT = 'rk4-account';
+  const LS_NOTICE = 'rk4-notice';
+  const LS_RACE = 'rk4-race';
+  const LOADING_HTML = document.getElementById('app').innerHTML;
+
+  /* ---------- 小さな道具 ---------- */
+  const ESC = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ESC[c]);
+  const up = (n) => Number(n || 0).toLocaleString('ja-JP');
+  const jst = (ms, withSec) => new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', hour: '2-digit', minute: '2-digit', second: withSec ? '2-digit' : undefined, hour12: false }).format(new Date(ms));
+  const hm = (ms) => (ms ? jst(ms, false) : '未定');
+  const numCmp = (a, b) => Number(a) - Number(b);
+  const sortKey = (arr) => arr.slice().sort(numCmp).join('-');
+  const cmpKey = (x, y) => {
+    const a = x.split('-').map(Number);
+    const b = y.split('-').map(Number);
+    return a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
+  };
+
+  const store = {
+    get(k) { try { const v = window.localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } },
+    set(k, v) { try { window.localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+    del(k) { try { window.localStorage.removeItem(k); } catch (e) { /* 無視 */ } }
+  };
+
+  function deviceId() {
+    let id = store.get(LS_DEVICE);
+    if (typeof id === 'string' && /^[A-Za-z0-9_-]{16,80}$/.test(id)) return id;
+    let hex = '';
+    try {
+      const a = new Uint8Array(16);
+      window.crypto.getRandomValues(a);
+      a.forEach((b) => { hex += (b < 16 ? '0' : '') + b.toString(16); });
+    } catch (e) {
+      for (let i = 0; i < 32; i++) hex += Math.floor(Math.random() * 16).toString(16);
+    }
+    id = 'd' + hex;
+    store.set(LS_DEVICE, id);
+    return store.get(LS_DEVICE) === id ? id : '';
+  }
+
+  function call(fn) {
+    const args = Array.prototype.slice.call(arguments, 1);
+    return new Promise((resolve) => {
+      let done = false;
+      const finish = (res) => { if (!done) { done = true; clearTimeout(timer); resolve(res); } };
+      const timer = setTimeout(() => finish({ ok: false, network: true, error: '通信に時間がかかっています。電波の良い場所でもう一度お試しください。' }), 30000);
+      if (window.URA_API) {
+        // Google の外（GitHub Pages）から呼ぶとき。Cookie を送らないので Google のログイン状態に左右されない
+        fetch(window.URA_API, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ fn: fn, args: args }), credentials: 'omit', redirect: 'follow', cache: 'no-store' })
+          .then((r) => r.json())
+          .then((res) => finish(res || { ok: false, error: '応答がありませんでした。もう一度お試しください。' }))
+          .catch(() => finish({ ok: false, network: true, error: '通信に失敗しました。電波の良い場所でもう一度お試しください。' }));
+        return;
+      }
+      const runner = google.script.run
+        .withSuccessHandler((res) => finish(res || { ok: false, error: '応答がありませんでした。もう一度お試しください。' }))
+        .withFailureHandler(() => finish({ ok: false, network: true, error: '通信に失敗しました。電波の良い場所でもう一度お試しください。' }));
+      runner[fn].apply(runner, args);
+    });
+  }
+
+  /* ---------- 状態 ---------- */
+  const S = {
+    pub: null, odds: null, agg: {}, stake: 1500, phase: 'loading', offset: 0, netError: '',
+    auth: null, me: null, tab: 'home', race: store.get(LS_RACE) === 'r2' ? 'r2' : 'r1',
+    login: { mode: store.get(LS_ACCOUNT) ? 'login' : 'register', err: '' },
+    pick: { r1: null, r2: null },
+    oddsTab: 'win', first: {}, open: {}, noticeSeen: Number(store.get(LS_NOTICE) || 0)
+  };
+  const serverNow = () => Date.now() + S.offset;
+
+  /* ---------- レースと出走表 ---------- */
+  const races = () => (S.pub ? S.pub.races : []);
+  const raceById = (id) => races().filter((r) => r.id === id)[0] || null;
+  const curRace = () => raceById(S.race) || races()[0] || null;
+  const raceIndex = (id) => races().map((r) => r.id).indexOf(id);
+  const entries = (id) => { const r = raceById(id); return r ? r.entries : []; };
+  const entry = (id, no) => entries(id).filter((e) => e.no === String(no))[0];
+  function badge(raceId, no, sm) {
+    const e = entry(raceId, no);
+    return '<span class="no f' + (e ? e.frame : 1) + (sm ? ' sm' : '') + '" aria-hidden="true">' + esc(no) + '</span>';
+  }
+  function comboHTML(raceId, key, sm) {
+    const p = key.split('-');
+    return '<span class="combo" role="img" aria-label="' + esc(p.join('→')) + '">' + p.map((n) => badge(raceId, n, sm !== false)).join('<span class="arrow" aria-hidden="true">→</span>') + '</span>';
+  }
+  const hasDns = (raceId, key) => key.split('-').some((n) => { const e = entry(raceId, n); return !e || e.dns; });
+
+  /* ---------- オッズ ---------- */
+  function buildAgg(o) {
+    const agg = { win: {}, ex: {}, qu: {}, tri: {} };
+    Object.keys((o && o.combos) || {}).forEach((k) => {
+      const st = o.combos[k];
+      const p = k.split('-');
+      agg.win[p[0]] = (agg.win[p[0]] || 0) + st;
+      agg.ex[p[0] + '-' + p[1]] = (agg.ex[p[0] + '-' + p[1]] || 0) + st;
+      agg.qu[sortKey([p[0], p[1]])] = (agg.qu[sortKey([p[0], p[1]])] || 0) + st;
+      agg.tri[sortKey(p)] = (agg.tri[sortKey(p)] || 0) + st;
+    });
+    return agg;
+  }
+  const oddsOf = (raceId) => (S.odds && S.odds[raceId]) || { pool: 0, count: 0, combos: {} };
+  function oddsVal(raceId, stake) {
+    const pool = oddsOf(raceId).pool;
+    if (!stake || !pool) return null;
+    return Math.floor(pool * 10 / stake) * 10 / 100;
+  }
+  const fo = (v) => (v == null ? '—' : v.toFixed(1));
+  function tierOdds(raceId, key) {
+    const p = key.split('-');
+    const A = S.agg[raceId] || { win: {}, ex: {}, qu: {}, tri: {} };
+    return {
+      t1: oddsVal(raceId, oddsOf(raceId).combos[key] || 0),
+      t2a: oddsVal(raceId, A.tri[sortKey(p)] || 0),
+      t2b: oddsVal(raceId, A.ex[p[0] + '-' + p[1]] || 0),
+      t3: oddsVal(raceId, A.qu[sortKey([p[0], p[1]])] || 0),
+      t4: oddsVal(raceId, A.win[p[0]] || 0)
+    };
+  }
+  function winTable(raceId) {
+    const A = S.agg[raceId];
+    const list = entries(raceId).map((e) => ({ e: e, stake: e.dns || !A ? 0 : (A.win[e.no] || 0), rank: 0 }));
+    const ranked = list.filter((x) => x.stake > 0).sort((x, y) => y.stake - x.stake);
+    let rank = 0;
+    let prev = null;
+    ranked.forEach((x, i) => { if (x.stake !== prev) { rank = i + 1; prev = x.stake; } x.rank = rank; });
+    return list;
+  }
+
+  /* ---------- 見出し・共通部品 ---------- */
+  function mastHTML() {
+    const p = S.pub || {};
+    const stamps = { preparing: ['準備中', 'is-preparing'], open: ['受付中', 'is-open'], closed: ['締切', 'is-closed'] };
+    const st = stamps[S.phase];
+    const day = p.deadlineAt ? new Intl.DateTimeFormat('ja-JP', { timeZone: 'Asia/Tokyo', month: 'numeric', day: 'numeric' }).format(new Date(p.deadlineAt)).replace('/', '.') : '—';
+    let h = '<header class="mast"><div class="ticket"><div class="ticket-main"><span class="ticket-kicker">ADMIT ONE · UNOFFICIAL</span><h1 class="brand-name">URA DERBY</h1></div>' +
+      '<div class="ticket-stub"><span>三連単</span><b>' + esc(day) + '</b></div></div>';
+    h += '<div class="count-wrap"><div class="count-top"><span class="count-label">' + countLabel() + '</span>' + (st ? '<span class="stamp ' + st[1] + '">' + st[0] + '</span>' : '') + '</div>' +
+      '<div class="count" id="count">' + countInner() + '</div></div>';
+    h += '<p class="mast-times"><span>締切<b>' + hm(p.deadlineAt) + '</b></span>' + races().map((r, i) => '<span>レース' + (i + 1) + ' 発走<b>' + hm(r.startAt) + '</b></span>').join('') + '</p>';
+    if (S.me) {
+      const n = Object.keys(S.me.tickets).filter((k) => S.me.tickets[k]).length;
+      h += '<div class="me-line"><span>' + esc(S.me.name) + ' さん</span><span>購入 <b>' + n + '</b> / ' + races().length + 'レース</span></div>';
+    }
+    return h + '</header>';
+  }
+  function countText() {
+    const p = S.pub || {};
+    if (S.phase !== 'open' || !p.deadlineAt) return '';
+    const sec = Math.floor(Math.max(0, p.deadlineAt - serverNow()) / 1000);
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    return (h ? h + ':' + String(m).padStart(2, '0') : String(m)) + ':' + String(s).padStart(2, '0');
+  }
+  function countInner() {
+    const txt = countText();
+    if (txt) {
+      const prev = S.lastCount || '';
+      const same = prev.length === txt.length;
+      let cells = '';
+      for (let i = 0; i < txt.length; i++) {
+        const c = txt.charAt(i);
+        cells += c === ':' ? '<b>:</b>' : '<i' + (!same || prev.charAt(i) !== c ? ' class="is-new"' : '') + '>' + c + '</i>';
+      }
+      S.lastCount = txt;
+      return '<span class="digits" role="timer" aria-label="締切まで ' + txt + '">' + cells + '</span>';
+    }
+    S.lastCount = '';
+    return '';
+  }
+  function countLabel() {
+    if (S.phase === 'open') return '締切まで';
+    if (S.phase === 'preparing') return '受付が始まるまでお待ちください';
+    if (S.phase === 'closed') return '締め切りました。結果は「自分の券」に出ます';
+    return '';
+  }
+  function noticeHTML() {
+    const n = S.pub && S.pub.notice;
+    if (!n || !n.at || n.at <= S.noticeSeen) return '';
+    return '<div class="banner" role="status"><span>' + esc(n.text) + '</span><button type="button" class="btn btn-ghost btn-sm" data-act="notice-ok">閉じる</button></div>';
+  }
+  function raceSegHTML() {
+    return '<div class="race-seg" role="group" aria-label="レース">' + races().map((r, i) => {
+      const t = S.me && S.me.tickets[r.id];
+      const res = S.me && S.me.results[r.id];
+      let chip = t ? '<span class="status-chip">購入済み</span>' : '<span class="status-chip is-none">未購入</span>';
+      if (res) chip = '<span class="status-chip">' + verdictWord(res.status) + '</span>';
+      return '<button type="button" class="race-btn" data-act="race" data-race="' + r.id + '" aria-pressed="' + (r.id === S.race) + '"><small>レース' + (i + 1) + ' ' + chip + '</small><b>' + esc(r.name) + '</b><span>発走 ' + hm(r.startAt) + '</span></button>';
+    }).join('') + '</div>';
+  }
+  const verdictWord = (st) => ({ hit: '的中', miss: 'はずれ', refund: '返還' })[st] || '';
+  function verdictHTML(res) {
+    const word = verdictWord(res.status);
+    return '<span><span class="verdict is-' + res.status + '">' + word + '</span>' + (res.status === 'refund' && res.reason ? '<span class="verdict-reason">' + esc(res.reason) + '</span>' : '') + '</span>';
+  }
+  function tiersHTML(raceId, key) {
+    const t = tierOdds(raceId, key);
+    return '<div class="tiers"><div>三連複<b>' + fo(t.t2a) + '</b></div><div>2連単<b>' + fo(t.t2b) + '</b></div><div>2連複<b>' + fo(t.t3) + '</b></div><div>単勝<b>' + fo(t.t4) + '</b></div></div>';
+  }
+
+  /* ---------- ログイン・アカウント作成 ---------- */
+  function loginHTML() {
+    let h = mastHTML() + '<section class="sec">';
+    const prev = store.get(LS_ACCOUNT);
+    const reg = S.login.mode === 'register';
+    h += '<div class="seg2" role="group" aria-label="参加の方法"><button type="button" data-act="login-mode" data-mode="register" aria-pressed="' + reg + '">はじめての方</button>' +
+      '<button type="button" data-act="login-mode" data-mode="login" aria-pressed="' + !reg + '">ログイン</button></div>';
+    if (prev) h += '<p class="info">この端末では「' + esc(prev) + '」さんのアカウントが作られています。</p>';
+    if (reg) {
+      if (S.phase === 'closed') {
+        h += '<p class="note is-warn">締切を過ぎたため、新しいアカウントは作れません。作ってあるアカウントでログインしてください。</p>';
+      } else {
+        h += '<p>名前とパスワードを決めて、アカウントを作ります。</p>' +
+          '<p class="note is-gold"><b>名前は本名（フルネーム）で入れてください。</b>主催者が参加者の確認に使います。ニックネームやあだ名は使わないでください。名前はほかの参加者には表示されません。</p>' +
+          '<label class="field"><span>名前（本名・20文字まで）</span><input class="input" id="reg-name" maxlength="20" autocomplete="name" placeholder="例：宇佐美 太郎"></label>' +
+          '<label class="field"><span>パスワード（4文字以上）</span><input class="input" id="reg-pw" type="password" autocomplete="new-password"></label>' +
+          '<label class="field"><span>パスワード（もう一度）</span><input class="input" id="reg-pw2" type="password" autocomplete="new-password"></label>' +
+          '<p class="err" id="login-err">' + esc(S.login.err) + '</p>' +
+          '<button type="button" class="btn btn-primary btn-block" data-act="register">アカウントを作って参加する</button>' +
+          '<p class="small muted">1台のスマホで作れるアカウントは1つです。パスワードを忘れたときは主催者に連絡してください。</p>';
+      }
+    } else {
+      h += '<label class="field"><span>名前</span><input class="input" id="login-name" maxlength="40" autocomplete="username" value="' + esc(prev || '') + '"></label>' +
+        '<label class="field"><span>パスワード</span><input class="input" id="login-pw" type="password" autocomplete="current-password"></label>' +
+        '<p class="err" id="login-err">' + esc(S.login.err) + '</p>' +
+        '<button type="button" class="btn btn-primary btn-block" data-act="login">ログイン</button>' +
+        '<p class="small muted">パスワードを忘れたときは主催者に連絡してください。新しいパスワードを設定してもらえます。</p>';
+    }
+    h += '<p><button type="button" class="link" data-act="rules">ルールを見る</button></p>';
+    return h + '</section>';
+  }
+
+  /* ---------- 出走表 ---------- */
+  function homeHTML() {
+    const r = curRace();
+    let h = mastHTML() + noticeHTML() + raceSegHTML();
+    if (!r) return h + '<p class="empty">出走表は準備中です</p>';
+    const t = S.me.tickets[r.id];
+    const res = S.me.results[r.id];
+    if (res) {
+      h += '<div class="myline"><span>あなたの券' + comboHTML(r.id, res.key) + '</span>' + verdictHTML(res) + '</div>';
+    } else if (t) {
+      const jb = S.justBought === r.id;
+      h += '<div class="myline' + (jb ? ' is-new' : '') + '"><span>あなたの券' + comboHTML(r.id, t.key) + '</span><span style="flex-direction:column;gap:4px"><span class="small muted">' + up(S.stake) + 'UP</span><span class="mini-stamp' + (jb ? ' is-press' : '') + '">受付済</span></span></div>';
+    } else if (S.phase === 'open') {
+      h += '<div class="myline"><span>このレースはまだ買っていません</span><span><button type="button" class="btn btn-primary btn-sm" data-act="tab" data-tab="buy">購入する</button></span></div>';
+    }
+    h += '<section class="sec"><div class="race-head"><h2>' + esc(r.name) + '</h2><span>発走 <b>' + hm(r.startAt) + '</b></span></div></section>';
+    h += '<div class="card-table">' + (r.entries.length ? '<div class="runner runner-head" aria-hidden="true"><span>枠</span><span>選手名</span><span>単勝</span></div>' + winTable(r.id).map(runnerRow).join('') : '<p class="empty">出走表は準備中です</p>') + '</div>';
+    h += '<section class="sec"><div class="row-actions"><button type="button" class="btn btn-ghost btn-sm" data-act="rules">ルール</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-act="logout">ログアウト</button></div></section>';
+    return h;
+  }
+  function runnerRow(x) {
+    const e = x.e;
+    const raceId = S.race;
+    const odds = e.dns ? '' : fo(oddsVal(raceId, x.stake));
+    const sub = e.dns ? '' : (x.rank ? x.rank + '番人気' : '単勝');
+    return '<div class="runner' + (e.dns ? ' is-dns' : '') + '">' + badge(raceId, e.no) + '<div class="runner-name">' + esc(e.name) +
+      (e.dns ? '<span class="tag-dns">棄権</span>' : '') + (e.team ? '<span class="runner-team">' + esc(e.team) + '</span>' : '') +
+      '</div><div class="runner-odds"><b>' + odds + '</b><span>' + sub + '</span></div></div>';
+  }
+
+  /* ---------- 購入（マークカード） ---------- */
+  const COLS = [{ k: 'f', label: '1着' }, { k: 's', label: '2着' }, { k: 't', label: '3着' }];
+  function pickOf(raceId) {
+    if (!S.pick[raceId]) {
+      const t = S.me && S.me.tickets[raceId];
+      if (t && !hasDns(raceId, t.key)) { const p = t.key.split('-'); S.pick[raceId] = { f: [p[0]], s: [p[1]], t: [p[2]] }; }
+      else S.pick[raceId] = { f: [], s: [], t: [] };
+    }
+    return S.pick[raceId];
+  }
+  function buyHTML() {
+    let h = mastHTML() + raceSegHTML();
+    const r = curRace();
+    if (!r) return h;
+    if (S.phase !== 'open') return h + '<p class="empty">' + (S.phase === 'preparing' ? '受付が始まると購入できます。' : '締め切りました。購入・変更はできません。') + '</p>';
+    const t = S.me.tickets[r.id];
+    h += '<section class="sec" style="padding-bottom:0"><div class="race-head"><h2>' + esc(r.name) + 'の三連単</h2><span>1通り ' + up(S.stake) + 'UP</span></div>';
+    if (t) {
+      const jb = S.justBought === r.id;
+      h += '<div class="myline' + (jb ? ' is-new' : '') + '" style="margin:8px 0 6px"><span>今の券' + comboHTML(r.id, t.key) + '</span><span><span class="mini-stamp' + (jb ? ' is-press' : '') + '">受付済</span></span></div><p class="small muted" style="margin:0">選び直して確定すると、この券と入れ替わります。</p>';
+      if (hasDns(r.id, t.key)) h += '<p class="note is-warn">今の券に棄権した選手が入っています。締切までに選び直さないと返還になります。</p>';
+    } else {
+      h += '<p class="small muted">1着・2着・3着を1人ずつマークしてください。締切までは何度でも変更できます。</p>';
+    }
+    h += '</section>' + markcardHTML(r);
+    return h + '<p class="hint" id="buy-hint">' + esc(selectionState().hint) + '</p>';
+  }
+  function markcardHTML(r) {
+    const pick = pickOf(r.id);
+    const tmpl = 'grid-template-columns:minmax(0,1fr) 56px 56px 56px';
+    let h = '<div class="markcard"><div class="mc-head" style="' + tmpl + '"><div>選手</div>' + COLS.map((c) => '<div class="mc-col"><span>' + c.label + '</span></div>').join('') + '</div>';
+    r.entries.forEach((e) => {
+      h += '<div class="mc-row' + (e.dns ? ' is-dns' : '') + '" style="' + tmpl + '"><div class="mc-runner">' + badge(r.id, e.no) + '<span class="mc-name">' + esc(e.name) +
+        (e.dns ? '<small>棄権</small>' : (e.team ? '<small>' + esc(e.team) + '</small>' : '')) + '</span></div>';
+      COLS.forEach((c) => {
+        const on = pick[c.k].indexOf(e.no) !== -1;
+        h += '<button type="button" class="mark" data-act="mark" data-col="' + c.k + '" data-no="' + esc(e.no) + '" aria-pressed="' + on + '" aria-label="' +
+          esc(e.no + '番 ' + e.name + '、' + c.label) + '"' + (e.dns ? ' disabled' : '') + '><i>' + esc(e.no) + '</i></button>';
+      });
+      h += '</div>';
+    });
+    return h + '</div>';
+  }
+  function selectionState() {
+    const r = curRace();
+    if (!r || !S.me) return { ok: false, key: '', hint: '' };
+    const p = pickOf(r.id);
+    const t = S.me.tickets[r.id];
+    if (!(p.f.length === 1 && p.s.length === 1 && p.t.length === 1)) return { ok: false, key: '', hint: '1着・2着・3着を1人ずつマークしてください。', changing: !!t };
+    const key = p.f[0] + '-' + p.s[0] + '-' + p.t[0];
+    if (t && t.key === key) return { ok: false, key: key, hint: 'この組み合わせは購入済みです。変更するときは選び直してください。', changing: true, same: true };
+    return { ok: true, key: key, hint: '', changing: !!t };
+  }
+  function barHTML(st) {
+    const r = curRace();
+    const v = st.key ? oddsVal(r.id, oddsOf(r.id).combos[st.key] || 0) : null;
+    const oddsTxt = st.key ? (v == null ? 'まだ誰も買っていません' : '三連単 <b>' + fo(v) + '</b> 倍') : '';
+    return '<div class="bar"><div class="bar-in"><div class="bar-line"><span class="bar-points">' + (st.key ? comboHTML(r.id, st.key) : '<b>—</b>') + '</span>' +
+      '<span class="bar-odds">' + oddsTxt + '</span></div>' +
+      '<div class="bar-total"><span>賭け金 <b>' + up(S.stake) + '</b>UP（固定）</span><span>' + esc(r.name) + '</span></div>' +
+      '<button type="button" class="btn btn-primary btn-block" data-act="confirm"' + (st.ok ? '' : ' disabled') + '>' + (st.changing ? '変更内容を確認' : '購入内容を確認') + '</button></div></div>';
+  }
+  function renderBar(st) {
+    const root = document.getElementById('bar-root');
+    const show = !!S.me && S.tab === 'buy' && S.phase === 'open' && !!curRace();
+    const had = !!root.firstChild;
+    root.innerHTML = show ? barHTML(st || selectionState()) : '';
+    if (show && had && root.firstChild) root.firstChild.style.animation = 'none';
+    document.getElementById('app').classList.toggle('has-bar', show);
+  }
+  function updateMarks() {
+    const r = curRace();
+    const p = pickOf(r.id);
+    document.querySelectorAll('#app .mark').forEach((btn) => {
+      const on = p[btn.getAttribute('data-col')].indexOf(btn.getAttribute('data-no')) !== -1;
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    const st = selectionState();
+    const hint = document.getElementById('buy-hint');
+    if (hint) hint.textContent = st.hint;
+    renderBar(st);
+  }
+  function toggleMark(col, no) {
+    const p = pickOf(S.race);
+    if (p[col].indexOf(no) !== -1) { p[col] = []; return; }
+    COLS.forEach((c) => { if (c.k !== col) p[c.k] = p[c.k].filter((n) => n !== no); });
+    p[col] = [no];
+  }
+
+  /* ---------- 自分の券 ---------- */
+  function mineHTML() {
+    let h = mastHTML() + noticeHTML();
+    h += races().map((r, i) => {
+      const t = S.me.tickets[r.id];
+      const res = S.me.results[r.id];
+      const key = res ? res.key : (t ? t.key : '');
+      let c = '<article class="mycard"><div class="mycard-in"><div class="mycard-top"><div><div class="mycard-label">レース' + (i + 1) + '</div><div class="mycard-name">' + esc(r.name) + '</div>' +
+        '<div class="mycard-time">発走 ' + hm(r.startAt) + '</div></div>' + (res ? verdictHTML(res) : '') + '</div>';
+      if (key) {
+        c += '<div class="mycard-ticket">' + comboHTML(r.id, key, false) + '<span class="muted">' + up(S.stake) + 'UP</span></div>';
+        if (!res) {
+          if (hasDns(r.id, key)) c += '<p class="note is-warn">棄権した選手が入っています。' + (S.phase === 'open' ? '締切までに選び直さないと返還になります。' : 'この券は返還になります。') + '</p>';
+          const v = oddsVal(r.id, oddsOf(r.id).combos[key] || 0);
+          c += '<p class="ticket-odds">' + (v == null ? '三連単オッズはまだ出ていません（30秒ほどで更新）' : '三連単オッズ <b>' + fo(v) + '</b> 倍（目安）') + '</p>';
+          if (S.open[r.id]) c += tiersHTML(r.id, key) + '<p class="small muted">三連単が外れても、下の段で当たりが決まると的中になります。表示はその段で決まった場合の目安です。</p>';
+          c += '<div class="row-actions"><button type="button" class="btn btn-ghost btn-sm" data-act="toggle-tiers" data-race="' + r.id + '" aria-expanded="' + !!S.open[r.id] + '">' + (S.open[r.id] ? '目安を閉じる' : 'ほかの段の目安') + '</button>' +
+            (S.phase === 'open' ? '<button type="button" class="btn btn-ghost btn-sm" data-act="change" data-race="' + r.id + '">選び直す</button><button type="button" class="btn btn-ghost btn-sm" data-act="cancel" data-race="' + r.id + '">取り消し</button>' : '') + '</div>';
+        } else if (res.status === 'hit') {
+          c += '<p class="small muted">おめでとうございます。</p>';
+        }
+      } else {
+        c += '<p class="mycard-none">' + (res ? '' : (S.phase === 'open' ? 'まだ買っていません。' : '購入はありませんでした。')) + '</p>';
+        if (S.phase === 'open') c += '<div class="row-actions"><button type="button" class="btn btn-primary btn-sm" data-act="change" data-race="' + r.id + '">このレースを買う</button></div>';
+      }
+      return c + '</div></article>';
+    }).join('');
+    h += '<section class="sec"><p class="small muted">結果はレースごとに、主催者が確定したあとで表示されます。表示されるのは自分の券の結果だけです。</p></section>';
+    return h;
+  }
+
+  /* ---------- オッズ ---------- */
+  function oddsHTML() {
+    let h = mastHTML() + raceSegHTML();
+    const r = curRace();
+    if (!r) return h;
+    const o = oddsOf(r.id);
+    h += '<div class="segs" role="group" aria-label="オッズの種類">' + [['win', '単勝'], ['tri', '三連単 人気順'], ['first', '1着別']].map((s) =>
+      '<button type="button" class="chip" data-act="odds-tab" data-t="' + s[0] + '" aria-pressed="' + (S.oddsTab === s[0]) + '">' + s[1] + '</button>').join('') + '</div>';
+    if (!o.pool) return h + '<p class="empty">まだ購入がないため、オッズは出ていません。</p>';
+    if (S.oddsTab === 'win') {
+      h += '<div class="board"><div class="board-head"><span>単勝オッズ</span><span>券の1着から計算</span></div>' + winTable(r.id).map((x) => {
+        const e = x.e;
+        return '<div class="board-row' + (e.dns ? ' is-dns' : '') + '">' + badge(r.id, e.no) + '<span class="board-name">' + esc(e.name) + (e.team ? '<small>' + esc(e.team) + '</small>' : '') + '</span>' +
+          '<span class="board-odds' + (e.dns || !x.stake ? ' is-none' : '') + '">' + (e.dns ? '棄権' : fo(oddsVal(r.id, x.stake))) + (x.rank ? '<small>' + x.rank + '番人気</small>' : '') + '</span></div>';
+      }).join('') + '</div>';
+    } else if (S.oddsTab === 'tri') {
+      const top = Object.keys(o.combos).map((k) => [k, o.combos[k]]).sort((a, b) => b[1] - a[1] || cmpKey(a[0], b[0])).slice(0, 10);
+      h += '<div class="board"><div class="board-head"><span>三連単 人気上位10組</span></div>' + top.map((x, i) =>
+        '<div class="board-row"><span class="board-rank">' + (i + 1) + '</span>' + comboHTML(r.id, x[0]) + '<span class="board-odds">' + fo(oddsVal(r.id, x[1])) + '</span></div>').join('') + '</div>';
+    } else {
+      const avail = r.entries.filter((e) => !e.dns);
+      let first = S.first[r.id];
+      if (!first || !avail.some((e) => e.no === first)) {
+        const ranked = winTable(r.id).filter((x) => x.rank).sort((a, b) => a.rank - b.rank);
+        first = ranked.length ? ranked[0].e.no : (avail[0] ? avail[0].no : null);
+        S.first[r.id] = first;
+      }
+      h += '<div class="firsts" role="group" aria-label="1着の選手">' + avail.map((e) =>
+        '<button type="button" class="first" data-act="first" data-no="' + esc(e.no) + '" aria-pressed="' + (first === e.no) + '">' + badge(r.id, e.no, true) + esc(e.name) + '</button>').join('') + '</div>';
+      const rows = [];
+      avail.forEach((b) => { avail.forEach((c) => {
+        if (b.no !== first && c.no !== first && b.no !== c.no) { const k = first + '-' + b.no + '-' + c.no; rows.push([k, o.combos[k] || 0]); }
+      }); });
+      rows.sort((x, y) => (y[1] - x[1]) || cmpKey(x[0], y[0]));
+      h += '<div class="board"><div class="board-head"><span>1着が' + esc(first) + '番の三連単</span><span>' + rows.length + '通り</span></div>' + rows.map((x) =>
+        '<div class="board-row"><span></span>' + comboHTML(r.id, x[0]) + '<span class="board-odds' + (x[1] ? '' : ' is-none') + '">' + fo(oddsVal(r.id, x[1])) + '</span></div>').join('') + '</div>';
+    }
+    return h + '<p class="board-foot">' + jst(S.odds.at, true) + ' 時点' + (S.phase === 'open' ? '（30秒ほどごとに更新）' : '') + '</p>';
+  }
+
+  /* ---------- シート・トースト ---------- */
+  let toastTimer = 0;
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('is-on');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('is-on'), 3800);
+  }
+  function openSheet(title, body, actions, onMount) {
+    const root = document.getElementById('sheet-root');
+    root.innerHTML = '<div class="sheet-back"><div class="sheet" role="dialog" aria-modal="true" aria-label="' + esc(title) + '" tabindex="-1"><div class="sheet-head"><h2 class="sheet-title">' + esc(title) +
+      '</h2><button type="button" class="sheet-x" data-sheet-close aria-label="閉じる">×</button></div><div class="sheet-body">' + body + '</div>' +
+      (actions ? '<div class="sheet-actions">' + actions + '</div>' : '') + '</div></div>';
+    const sheet = root.querySelector('.sheet');
+    root.querySelectorAll('[data-sheet-close]').forEach((b) => b.addEventListener('click', closeSheet));
+    if (onMount) onMount(sheet);
+    sheet.focus();
+  }
+  function closeSheet() { document.getElementById('sheet-root').innerHTML = ''; }
+
+  function openConfirm() {
+    const st = selectionState();
+    const r = curRace();
+    if (!st.ok || !r) return;
+    const t = S.me.tickets[r.id];
+    const v = oddsVal(r.id, oddsOf(r.id).combos[st.key] || 0);
+    const body = '<div class="kv"><span>レース</span><span>' + esc(r.name) + '</span></div>' +
+      (t ? '<div class="kv"><span>今の券</span>' + comboHTML(r.id, t.key) + '</div>' : '') +
+      '<div class="kv"><span>' + (t ? '新しい券' : '組番') + '</span>' + comboHTML(r.id, st.key, false) + '</div>' +
+      '<div class="kv"><span>賭け金</span><b>' + up(S.stake) + 'UP</b></div>' +
+      '<div class="kv"><span>今の三連単オッズ</span><span>' + (v == null ? 'まだ誰も買っていません' : '<b>' + fo(v) + '</b> 倍') + '</span></div>' +
+      '<p class="small muted">オッズは今の目安で、締切まで変わります。締切までは何度でも変更・取り消しできます。</p>';
+    openSheet(t ? '変更内容の確認' : '購入内容の確認', body, '<button type="button" class="btn btn-ghost" data-sheet-close>戻る</button><button type="button" class="btn btn-primary" id="do-buy">' + (t ? '変更する' : '購入する') + '</button>', (el) => {
+      el.querySelector('#do-buy').addEventListener('click', () => doBuy(r.id, st.key, el.querySelector('#do-buy')));
+    });
+  }
+  async function doBuy(raceId, key, btn) {
+    btn.disabled = true;
+    const label = btn.textContent;
+    btn.textContent = '送信しています…';
+    btn.classList.add('is-busy');
+    const r = await call('apiBuy', S.auth.name, S.auth.token, raceId, key);
+    if (r.ok) {
+      S.me = r.mine;
+      S.pick[raceId] = null;
+      S.justBought = raceId;
+      setTimeout(() => { if (S.justBought === raceId) S.justBought = null; }, 1500);
+      closeSheet();
+      const other = races().filter((x) => x.id !== raceId && !S.me.tickets[x.id])[0];
+      toast((r.changed ? '変更しました' : '購入しました') + (other ? '。' + other.name + 'もお忘れなく' : ''));
+      render();
+      refreshPublic(false);
+      return;
+    }
+    if (handleAuth(r)) { closeSheet(); return; }
+    if (r.network) {
+      const m = await call('apiMine', S.auth.name, S.auth.token);
+      if (m.ok && m.mine.tickets[raceId] && m.mine.tickets[raceId].key === key) {
+        S.me = m.mine; S.pick[raceId] = null; closeSheet();
+        toast('購入できていました。「自分の券」で確認できます');
+        render();
+        return;
+      }
+    }
+    btn.disabled = false;
+    btn.classList.remove('is-busy');
+    btn.textContent = label;
+    toast(r.error);
+    if (/締切|受付/.test(r.error)) { closeSheet(); refreshPublic(true); }
+  }
+  function openCancel(raceId) {
+    const t = S.me.tickets[raceId];
+    const r = raceById(raceId);
+    if (!t || !r) return;
+    openSheet('券の取り消し', '<p>' + esc(r.name) + 'の券を取り消しますか？締切までなら、あとで買い直せます。</p><div class="kv"><span>今の券</span>' + comboHTML(raceId, t.key, false) + '</div>',
+      '<button type="button" class="btn btn-ghost" data-sheet-close>やめる</button><button type="button" class="btn btn-danger" id="do-cancel">取り消す</button>', (el) => {
+        el.querySelector('#do-cancel').addEventListener('click', async (ev) => {
+          const b = ev.currentTarget;
+          b.disabled = true;
+          b.classList.add('is-busy');
+          const res = await call('apiCancel', S.auth.name, S.auth.token, raceId);
+          if (res.ok) { S.me = res.mine; S.pick[raceId] = null; closeSheet(); toast('取り消しました'); render(); refreshPublic(false); }
+          else if (!handleAuth(res)) { b.disabled = false; b.classList.remove('is-busy'); toast(res.error); }
+        });
+      });
+  }
+  function openRules() {
+    openSheet('ルール', '<div class="rules">' +
+      '<h3>遊び方</h3><p>URA DERBYの対象は2レースです。各レースで、1着・2着・3着を順番どおりに予想する「三連単」の券を1通りだけ買います。賭け金は1通り' + up(S.stake) + 'UPで決まっています。締切までは何度でも変更・取り消しができ、締切時点の券で確定します。片方のレースだけ買うこともできます。</p>' +
+      '<h3>締切</h3><p>締切は2レース共通です。1レース目の発走前に、2レース分をまとめて締め切ります。</p>' +
+      '<h3>当たりの決め方（レースごと）</h3><p>上から順に判定し、当たりの券がある段で決まります。</p><ol><li>三連単：1〜3着を順番どおり</li><li>三連複（上位3人を順不同）と2連単（1着・2着を順番どおり）のうち、オッズが高いほう（同じなら三連複）</li>' +
+      '<li>2連複：券の1着・2着の2人が、結果の1着・2着と順不同で一致</li><li>単勝：券の1着が結果の1着</li><li>どこにも当たりがなければ全員に返還</li></ol>' +
+      '<p>たとえば結果が 1→2→3 で、三連単を当てた人がいなければ、1・2・3の3人を選んでいた券（三連複）や、1→2の順で選んでいた券（2連単）が的中になります。三連単が外れていても「的中」と出ることがあります。</p>' +
+      '<h3>棄権・失格・同着</h3><p>締切前に棄権が出たら、その選手を選んでいた人は選び直してください。失格者がいる場合は、繰り上げた公式の着順で判定します。同着の場合は、同着の選手の順番を入れ替えた並びも当たりになります。</p>' +
+      '<h3>見られる情報</h3><p>オッズは全員の券の合計から出す目安で、締切まで変わります。ほかの人が何を買ったか、参加人数、賭け金の合計は表示されません。結果として見られるのは、自分の券が「的中」「はずれ」「返還」のどれかだけです。</p></div>', '');
+  }
+
+  /* ---------- 画面の組み立て ---------- */
+  function focusKey(el) {
+    if (!el || !el.getAttribute) return null;
+    if (el.id && /^(INPUT|TEXTAREA)$/.test(el.tagName)) return '#' + el.id;
+    if (!el.getAttribute('data-act')) return null;
+    let sel = '[data-act="' + el.getAttribute('data-act') + '"]';
+    ['data-tab', 'data-col', 'data-no', 'data-race', 'data-t', 'data-mode'].forEach((a) => {
+      const v = el.getAttribute(a);
+      if (v != null) sel += '[' + a + '="' + String(v).replace(/"/g, '\\"') + '"]';
+    });
+    return sel;
+  }
+  function render() {
+    const app = document.getElementById('app');
+    const nav = document.getElementById('nav');
+    const active = document.activeElement;
+    const refocus = active && app.contains(active) ? focusKey(active) : null;
+    const typed = {};
+    app.querySelectorAll('input[id]').forEach((el) => { if (el.value) typed[el.id] = el.value; });
+    if (!S.pub) {
+      nav.hidden = true;
+      app.innerHTML = S.netError ? '<div class="loading"><span class="loading-brand">URA DERBY</span><span>' + esc(S.netError) + '</span><button type="button" class="btn btn-ghost" data-act="retry">もう一度読み込む</button></div>' : LOADING_HTML;
+      return;
+    }
+    if (!S.me) {
+      nav.hidden = true;
+      renderBar();
+      app.innerHTML = loginHTML();
+    } else {
+      nav.hidden = false;
+      nav.querySelectorAll('.nav-btn').forEach((b) => { if (b.getAttribute('data-tab') === S.tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+      app.innerHTML = S.tab === 'buy' ? buyHTML() : S.tab === 'mine' ? mineHTML() : S.tab === 'odds' ? oddsHTML() : homeHTML();
+      renderBar();
+      tick();
+    }
+    const view = S.me ? S.tab : 'login';
+    if (view !== S.lastView) {
+      S.lastView = view;
+      app.classList.remove('is-enter');
+      void app.offsetWidth;
+      app.classList.add('is-enter');
+      clearTimeout(S.enterTimer);
+      S.enterTimer = setTimeout(() => app.classList.remove('is-enter'), 700);
+    }
+    S.stampPressed = true;
+    Object.keys(typed).forEach((id) => { const el = document.getElementById(id); if (el && !el.value) el.value = typed[id]; });
+    if (refocus) { const f = app.querySelector(refocus); if (f) f.focus({ preventScroll: true }); }
+  }
+  function tick() {
+    const el = document.getElementById('count');
+    if (!el || !S.pub) return;
+    if (S.phase === 'open' && S.pub.deadlineAt && serverNow() >= S.pub.deadlineAt) {
+      S.phase = 'closed';
+      closeSheet();
+      render();
+      refreshPublic(true);
+      return;
+    }
+    const txt = countText();
+    if (!txt || txt !== S.lastCount) el.innerHTML = countInner();
+    el.classList.toggle('is-soon', S.phase === 'open' && S.pub.deadlineAt - serverNow() < 5 * 60 * 1000);
+  }
+
+  /* ---------- データの取得 ---------- */
+  function handleAuth(r) {
+    if (r && r.code === 'auth') { logout(true); toast(r.error); return true; }
+    return false;
+  }
+  let refreshing = false;
+  async function refreshPublic(forceMine) {
+    if (refreshing) return;
+    refreshing = true;
+    const t0 = Date.now();
+    const r = await call('apiPublic');
+    const t1 = Date.now();
+    refreshing = false;
+    if (!r.ok) {
+      S.netError = r.error;
+      if (!S.pub) render();
+      return;
+    }
+    S.netError = '';
+    S.offset = r.now - Math.round((t0 + t1) / 2);
+    const prevVersion = S.pub ? S.pub.version : null;
+    const prevPhase = S.phase;
+    S.pub = r.pub;
+    S.stake = r.stake || S.stake;
+    S.odds = r.odds;
+    S.agg = {};
+    S.pub.races.forEach((x) => { S.agg[x.id] = buildAgg(oddsOf(x.id)); });
+    S.phase = r.phase;
+    if (S.auth && S.me && (forceMine || (prevVersion != null && prevVersion !== r.pub.version) || prevPhase !== r.phase)) {
+      const m = await call('apiMine', S.auth.name, S.auth.token);
+      if (m.ok) S.me = m.mine;
+      else if (handleAuth(m)) return;
+    }
+    const typing = document.activeElement && /^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName) && document.getElementById('app').contains(document.activeElement);
+    if (typing && !S.me) return;
+    if (document.getElementById('sheet-root').innerHTML && S.me) { renderBar(); return; }
+    render();
+  }
+  function schedulePoll() {
+    setTimeout(async () => {
+      if (!document.hidden) await refreshPublic(false);
+      schedulePoll();
+    }, 30000 + Math.floor(Math.random() * 8000));
+  }
+  function logout(silent) {
+    if (S.auth && !silent) call('apiLogout', S.auth.name, S.auth.token);
+    S.auth = null;
+    S.me = null;
+    S.pick = { r1: null, r2: null };
+    S.login = { mode: 'login', err: '' };
+    store.del(LS_AUTH);
+    S.tab = 'home';
+    render();
+  }
+  function busy(act, on) {
+    const b = document.querySelector('[data-act="' + act + '"]');
+    if (!b) return;
+    b.classList.toggle('is-busy', on);
+    b.disabled = on;
+  }
+  function setLoginErr(msg) {
+    S.login.err = msg;
+    const el = document.getElementById('login-err');
+    if (el) el.textContent = msg;
+  }
+  function afterAuth(res) {
+    S.auth = { name: res.name, token: res.token };
+    store.set(LS_AUTH, S.auth);
+    S.me = res.mine;
+    S.tab = 'home';
+    S.login = { mode: 'login', err: '' };
+    render();
+    window.scrollTo(0, 0);
+  }
+  async function doRegister() {
+    const name = (document.getElementById('reg-name').value || '').trim();
+    const pw = document.getElementById('reg-pw').value || '';
+    const pw2 = document.getElementById('reg-pw2').value || '';
+    if (!name) { setLoginErr('名前を入力してください。'); return; }
+    if (pw.trim().length < 4) { setLoginErr('パスワードは4文字以上にしてください。'); return; }
+    if (pw !== pw2) { setLoginErr('2回のパスワードが一致しません。'); return; }
+    setLoginErr('');
+    busy('register', true);
+    const r = await call('apiRegister', name, pw, deviceId());
+    busy('register', false);
+    if (r.ok) {
+      store.set(LS_ACCOUNT, r.name);
+      afterAuth(r);
+      toast('アカウントを作りました');
+      return;
+    }
+    if (r.code === 'device') {
+      S.login = { mode: 'login', err: r.error };
+      render();
+      return;
+    }
+    setLoginErr(r.error);
+  }
+  async function doLogin() {
+    const name = (document.getElementById('login-name').value || '').trim();
+    const pw = document.getElementById('login-pw').value || '';
+    if (!name || !pw) { setLoginErr('名前とパスワードを入力してください。'); return; }
+    setLoginErr('');
+    busy('login', true);
+    const r = await call('apiLogin', name, pw);
+    busy('login', false);
+    if (r.ok) { afterAuth(r); return; }
+    setLoginErr(r.error);
+  }
+
+  /* ---------- 操作 ---------- */
+  document.addEventListener('click', (ev) => {
+    const el = ev.target.closest ? ev.target.closest('[data-act]') : null;
+    if (!el || el.disabled) return;
+    const act = el.getAttribute('data-act');
+    switch (act) {
+      case 'tab': S.tab = el.getAttribute('data-tab'); render(); window.scrollTo(0, 0); break;
+      case 'retry': refreshPublic(true); break;
+      case 'login-mode': S.login = { mode: el.getAttribute('data-mode'), err: '' }; render(); break;
+      case 'register': doRegister(); break;
+      case 'login': doLogin(); break;
+      case 'logout': logout(false); break;
+      case 'notice-ok': S.noticeSeen = S.pub.notice.at; store.set(LS_NOTICE, S.noticeSeen); render(); break;
+      case 'rules': openRules(); break;
+      case 'race': S.race = el.getAttribute('data-race'); store.set(LS_RACE, S.race); render(); break;
+      case 'mark': toggleMark(el.getAttribute('data-col'), el.getAttribute('data-no')); updateMarks(); break;
+      case 'confirm': openConfirm(); break;
+      case 'change': S.race = el.getAttribute('data-race'); store.set(LS_RACE, S.race); S.tab = 'buy'; render(); window.scrollTo(0, 0); break;
+      case 'cancel': openCancel(el.getAttribute('data-race')); break;
+      case 'toggle-tiers': { const id = el.getAttribute('data-race'); S.open[id] = !S.open[id]; render(); break; }
+      case 'odds-tab': S.oddsTab = el.getAttribute('data-t'); render(); break;
+      case 'first': S.first[S.race] = el.getAttribute('data-no'); render(); break;
+      default: break;
+    }
+  });
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape' && document.getElementById('sheet-root').innerHTML) { closeSheet(); return; }
+    if (ev.key === 'Enter' && ev.target && /^(reg-|login-)/.test(ev.target.id || '')) {
+      const btn = document.querySelector('[data-act="login"],[data-act="register"]');
+      if (btn) btn.click();
+    }
+  });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshPublic(false); });
+
+  /* ---------- 起動 ---------- */
+  (async function boot() {
+    deviceId();
+    await refreshPublic(false);
+    const saved = store.get(LS_AUTH);
+    if (saved && saved.name && saved.token && S.pub) {
+      const r = await call('apiMine', saved.name, saved.token);
+      if (r.ok) { S.auth = { name: saved.name, token: saved.token }; S.me = r.mine; }
+      else if (r.code === 'auth') { store.del(LS_AUTH); S.login = { mode: 'login', err: '' }; }
+      else { S.auth = { name: saved.name, token: saved.token }; S.netError = r.error; }
+    }
+    if (S.auth && !S.me) {
+      const r2 = await call('apiMine', S.auth.name, S.auth.token);
+      if (r2.ok) S.me = r2.mine; else S.auth = null;
+    }
+    render();
+    schedulePoll();
+    setInterval(tick, 1000);
+  })();
+})();
+</script>
+</body>
+</html>
